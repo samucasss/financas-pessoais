@@ -1,5 +1,5 @@
 <template>
-  <Tutorial />
+  <div>Benvindo ao sistema de finanças pessoais</div>
 </template>
 
 <script>
