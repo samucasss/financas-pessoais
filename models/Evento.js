@@ -1,5 +1,6 @@
 import moment from 'moment'
 import { FormatUtil } from './FormatUtil'
+import { ObjectUtil } from './ObjectUtil'
 
 export class Evento {
 
@@ -19,14 +20,7 @@ export class Evento {
     }
 
     setJson(json) {
-        this.id = json.id
-        this.data = json.data
-        this.nome = json.nome
-        this.tipo = json.tipo
-        this.recorrente = json.recorrente
-        this.tipoRecorrencia = json.tipoRecorrencia
-        this.valor = json.valor
-        this.realizado = json.realizado
+        ObjectUtil.copy(this, json)
     }
 
     getDataFormatada() {

@@ -38,20 +38,38 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
-    // https://go.nuxtjs.dev/bootstrap
     'bootstrap-vue/nuxt',
-    // https://go.nuxtjs.dev/axios
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/auth'
   ],
 
   bootstrapVue: {
     icons: true
   },
 
-  // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: '/'
+    proxy: true
+  },
+
+  proxy: {
+    '/api': { 
+      target: 'http://localhost:3001', 
+      pathRewrite: { '^/api/': '' }, 
+      changeOrigin: true,
+      logLevel: "debug" 
+    }
+  },
+
+  auth: {
+    strategies: {
+      local: {
+        endpoints: {
+          login: { url: '/api/auth/login', method: 'post', propertyName: 'token' },
+          user: { url: '/api/auth/user', method: 'get', propertyName: 'user' },
+          logout: false
+        }
+      }
+    }
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

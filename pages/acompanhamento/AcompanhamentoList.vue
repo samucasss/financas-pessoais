@@ -65,7 +65,6 @@
                     day: 'numeric',
                   }"
                   locale="pt-BR"
-                  size="sm"
                 ></b-form-datepicker>
               </b-td>
               <b-td class="text-right">
@@ -169,14 +168,14 @@
 import moment from "moment";
 import { MonthPickerInput } from "vue-month-picker";
 import { Money } from "v-money";
-import { Facade } from "@/services/Facade";
 import { PlanejamentoMensal } from "~/models/PlanejamentoMensal";
+import { PlanejamentoEvento } from '~/models/PlanejamentoEvento';
 
 export default {
   components: { Money, MonthPickerInput },
+  middleware: 'auth',
   data() {
     return {
-      service: Facade.getInstance(),
       planejamentoMensal: new PlanejamentoMensal([]),
       showAguarde: false,
       breadcrumbList: [
@@ -250,8 +249,9 @@ export default {
     },
     async findAllPlanejamentoEventos(month, year) {
       try {
-        this.planejamentoMensal.planejamentoEventoList =
-          await this.service.findAllPlanejamentoEventos(month, year);
+        const result = await this.$axios.get('/api/acompanhamento', {params: {mes: month, ano: year}});
+        this.planejamentoMensal.planejamentoEventoList = result.data.map(json => new PlanejamentoEvento(json))
+
       } catch (e) {
         window.console.log("error: " + e);
         this.error("Erro ao recuperar planejamento de eventos");
@@ -279,10 +279,8 @@ export default {
       planejamentoEvento.message = "Aguarde ...";
 
       try {
-        const json = await this.service.saveRealizacaoEvento(
-          planejamentoEvento
-        );
-        planejamentoEvento.setJson(json);
+        const json = await this.$axios.post('/api/acompanhamento', planejamentoEvento);
+        planejamentoEvento.setJson(json.data);
 
         this.success();
       } catch (e) {

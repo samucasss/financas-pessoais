@@ -1,10 +1,11 @@
 import moment from 'moment'
 import { FormatUtil } from './FormatUtil'
+import { ObjectUtil } from './ObjectUtil'
 
 export class PlanejamentoEvento {
 
     constructor(json) {
-        this.id = null
+        this.eventoId = null
         this.tipo = ''
         this.recorrente = null
         this.nome = ''
@@ -20,23 +21,17 @@ export class PlanejamentoEvento {
     }
 
     setJson(json) {
-        this.id = json.id
-        this.tipo = json.tipo
-        this.recorrente = json.recorrente
-        this.nome = json.nome
-        this.data = json.data
-        this.valor = json.valor
-        this.realizado = json.realizado
+        ObjectUtil.copy(this, json)
     }
 
     fill(evento, data) {
-        this.id = evento.id
+        this.eventoId = evento.id
         this.tipo = evento.tipo
         this.recorrente = evento.recorrente
         this.nome = evento.nome
-        this.data = data
         this.valor = evento.valor
         this.realizado = evento.realizado
+        this.data = data
     }
 
     getDataFormatada() {

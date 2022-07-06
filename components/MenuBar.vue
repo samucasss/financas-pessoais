@@ -6,7 +6,7 @@
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
       <b-collapse id="nav-collapse" is-nav>
-        <b-navbar-nav>
+        <b-navbar-nav v-if="isAuthenticated">
           <b-nav-item
             v-for="menu of menuList"
             :key="menu.nome"
@@ -15,30 +15,18 @@
           >
         </b-navbar-nav>
 
-        <!-- Right aligned nav items -->
-        <b-navbar-nav class="ml-auto">
-          <b-nav-form>
-            <b-form-input
-              v-model="search"
-              size="sm"
-              class="mr-sm-2"
-              placeholder="Pesquisar"
-            ></b-form-input>
-            <b-button
-              size="sm"
-              class="my-2 my-sm-0"
-              type="button"
-              @click="pesquisar()"
-              >OK</b-button
-            >
-          </b-nav-form>
+        <b-navbar-nav v-if="!isAuthenticated" class="ml-auto">
+          <b-nav-item right href="/usuarios/RegistroForm">Registre-se</b-nav-item>
+          <b-nav-item right href="/login">Login</b-nav-item>
+        </b-navbar-nav>
 
+        <b-navbar-nav v-if="isAuthenticated" class="ml-auto">
           <b-nav-item-dropdown right>
-            <!-- Using 'button-content' slot -->
             <template #button-content>
-              <em>{{ userName }}</em>
+              <em>{{ loggedInUser.nome }}</em>
             </template>
-            <b-dropdown-item href="#">Sair</b-dropdown-item>
+            <b-dropdown-item href="/usuarios/AlterarForm">Meus dados</b-dropdown-item>
+            <b-dropdown-item @click="logout">Sair</b-dropdown-item>
           </b-nav-item-dropdown>
         </b-navbar-nav>
       </b-collapse>
@@ -47,35 +35,33 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   props: {
     appName: {
       type: String,
-      default: ''
+      default: "",
     },
     userName: {
       type: String,
-      default: ''
+      default: "",
     },
     menuList: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
-  data () {
-    return {
-      search: ''
-    }
+  data() {
+    return {};
+  },
+  computed: {
+    ...mapGetters(["isAuthenticated", "loggedInUser"]),
   },
   methods: {
-    pesquisar () {
-      this.$router.push({
-        path: '/tarefas/TarefaList',
-        query: {
-          search: this.search
-        }
-      })
-    }
-  }
-}
+    async logout() {
+      await this.$auth.logout();
+    },
+  },
+};
 </script>

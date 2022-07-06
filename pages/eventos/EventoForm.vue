@@ -76,17 +76,16 @@
 import { Money } from "v-money";
 import { Evento } from "@/models/Evento";
 import { EventoManager } from "@/models/EventoManager";
-import { Facade } from "@/services/Facade";
 
 export default {
   name: "EventoForm",
   components: { Money },
+  middleware: 'auth',
   props: {
     eventoManager: EventoManager,
   },
   data() {
     return {
-      service: Facade.getInstance(),
       eventoEdit: new Evento(),
       breadcrumbList: [
         { text: "Eventos", href: "#" },
@@ -162,16 +161,17 @@ export default {
       this.buttonOk = { label: "Aguarde ...", variant: "warning" };
 
       try {
-        const json = await this.service.save(this.eventoEdit);
+        const json = await this.$axios.post('/api/eventos', this.eventoEdit);
 
         if (this.eventoEdit.id) {
-          this.eventoManager.update(json);
+          this.eventoManager.update(json.data);
         } else {
-          this.eventoManager.add(json);
+          this.eventoManager.add(json.data);
         }
 
         this.$emit("success");
       } catch (e) {
+        window.console.log('erro: ' + e)
         this.error("Erro ao salvar evento");
       }
 
